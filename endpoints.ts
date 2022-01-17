@@ -22,11 +22,11 @@ export const init = ( liwe: ILiWE ) => {
 
 	console.log( "    - Address " );
 
-	address_db_init ( liwe );
+	address_db_init( liwe );
 
 
-	app.post ( "/api/address/admin/add", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
-		const { address, nr, type, name, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec, ___errors } = typed_dict( req.fields, [
+	app.post( "/api/address/admin/add", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
+		const { address, nr, type, name, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec, ___errors } = typed_dict( req.fields || req.body, [
 			{ name: "address", type: "string", required: true },
 			{ name: "nr", type: "string", required: true },
 			{ name: "type", type: "string", required: true },
@@ -43,17 +43,17 @@ export const init = ( liwe: ILiWE ) => {
 			{ name: "pec", type: "string", required: false }
 		] );
 
-		if ( ___errors.length ) return send_error ( res, { message: `Missing required fields: ${___errors.join ( ', ' )}` } );
+		if ( ___errors.length ) return send_error( res, { message: `Missing required fields: ${ ___errors.join( ', ' ) }` } );
 
-		post_address_admin_add ( req,address, nr, type, name, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec,  ( err: ILError, addr: Address ) => {
+		post_address_admin_add( req, address, nr, type, name, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec, ( err: ILError, addr: Address ) => {
 			if ( err ) return send_error( res, err );
 
 			send_ok( res, { addr } );
 		} );
 	} );
 
-	app.patch ( "/api/address/admin/update", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
-		const { id, name, address, nr, type, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec, ___errors } = typed_dict( req.fields, [
+	app.patch( "/api/address/admin/update", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
+		const { id, name, address, nr, type, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec, ___errors } = typed_dict( req.fields || req.body, [
 			{ name: "id", type: "string", required: true },
 			{ name: "name", type: "string", required: false },
 			{ name: "address", type: "string", required: false },
@@ -71,87 +71,87 @@ export const init = ( liwe: ILiWE ) => {
 			{ name: "pec", type: "string", required: false }
 		] );
 
-		if ( ___errors.length ) return send_error ( res, { message: `Missing required fields: ${___errors.join ( ', ' )}` } );
+		if ( ___errors.length ) return send_error( res, { message: `Missing required fields: ${ ___errors.join( ', ' ) }` } );
 
-		patch_address_admin_update ( req,id, name, address, nr, type, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec,  ( err: ILError, addr: Address ) => {
+		patch_address_admin_update( req, id, name, address, nr, type, city, zip, state, country, id_user, company_name, fiscal_code, vat_number, sdi, pec, ( err: ILError, addr: Address ) => {
 			if ( err ) return send_error( res, err );
 
 			send_ok( res, { addr } );
 		} );
 	} );
 
-	app.patch ( "/api/address/admin/fields", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
-		const { id, data, ___errors } = typed_dict( req.fields, [
+	app.patch( "/api/address/admin/fields", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
+		const { id, data, ___errors } = typed_dict( req.fields || req.body, [
 			{ name: "id", type: "string", required: true },
 			{ name: "data", type: "any", required: true }
 		] );
 
-		if ( ___errors.length ) return send_error ( res, { message: `Missing required fields: ${___errors.join ( ', ' )}` } );
+		if ( ___errors.length ) return send_error( res, { message: `Missing required fields: ${ ___errors.join( ', ' ) }` } );
 
-		patch_address_admin_fields ( req,id, data,  ( err: ILError, addr: Address ) => {
+		patch_address_admin_fields( req, id, data, ( err: ILError, addr: Address ) => {
 			if ( err ) return send_error( res, err );
 
 			send_ok( res, { addr } );
 		} );
 	} );
 
-	app.get ( "/api/address/admin/list", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
+	app.get( "/api/address/admin/list", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
 		const { id_user, rows, skip, ___errors } = typed_dict( req.query as any, [
 			{ name: "id_user", type: "string", required: false },
 			{ name: "rows", type: "number", required: false, default: -1 },
 			{ name: "skip", type: "number", required: false, default: 0 }
 		] );
 
-		if ( ___errors.length ) return send_error ( res, { message: `Missing required fields: ${___errors.join ( ', ' )}` } );
+		if ( ___errors.length ) return send_error( res, { message: `Missing required fields: ${ ___errors.join( ', ' ) }` } );
 
-		get_address_admin_list ( req,id_user, rows, skip,  ( err: ILError, addrs: Address[] ) => {
+		get_address_admin_list( req, id_user, rows, skip, ( err: ILError, addrs: Address[] ) => {
 			if ( err ) return send_error( res, err );
 
 			send_ok( res, { addrs } );
 		} );
 	} );
 
-	app.delete ( "/api/address/admin/del", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
-		const { id, ___errors } = typed_dict( req.fields, [
+	app.delete( "/api/address/admin/del", perms( [ "address.add" ] ), ( req: ILRequest, res: ILResponse ) => {
+		const { id, ___errors } = typed_dict( req.fields || req.body, [
 			{ name: "id", type: "string", required: true }
 		] );
 
-		if ( ___errors.length ) return send_error ( res, { message: `Missing required fields: ${___errors.join ( ', ' )}` } );
+		if ( ___errors.length ) return send_error( res, { message: `Missing required fields: ${ ___errors.join( ', ' ) }` } );
 
-		delete_address_admin_del ( req,id,  ( err: ILError, id: string ) => {
+		delete_address_admin_del( req, id, ( err: ILError, id: string ) => {
 			if ( err ) return send_error( res, err );
 
 			send_ok( res, { id } );
 		} );
 	} );
 
-	app.get ( "/api/address/details", ( req: ILRequest, res: ILResponse ) => {
+	app.get( "/api/address/details", ( req: ILRequest, res: ILResponse ) => {
 		const { id, ___errors } = typed_dict( req.query as any, [
 			{ name: "id", type: "string", required: false }
 		] );
 
-		if ( ___errors.length ) return send_error ( res, { message: `Missing required fields: ${___errors.join ( ', ' )}` } );
+		if ( ___errors.length ) return send_error( res, { message: `Missing required fields: ${ ___errors.join( ', ' ) }` } );
 
-		get_address_details ( req,id,  ( err: ILError, addr: Address ) => {
+		get_address_details( req, id, ( err: ILError, addr: Address ) => {
 			if ( err ) return send_error( res, err );
 
 			send_ok( res, { addr } );
 		} );
 	} );
 
-	app.get ( "/api/address/list", ( req: ILRequest, res: ILResponse ) => {
+	app.get( "/api/address/list", ( req: ILRequest, res: ILResponse ) => {
 		const { rows, skip, ___errors } = typed_dict( req.query as any, [
 			{ name: "rows", type: "number", required: false, default: -1 },
 			{ name: "skip", type: "number", required: false, default: 0 }
 		] );
 
-		if ( ___errors.length ) return send_error ( res, { message: `Missing required fields: ${___errors.join ( ', ' )}` } );
+		if ( ___errors.length ) return send_error( res, { message: `Missing required fields: ${ ___errors.join( ', ' ) }` } );
 
-		get_address_list ( req,rows, skip,  ( err: ILError, addrs: Address[] ) => {
+		get_address_list( req, rows, skip, ( err: ILError, addrs: Address[] ) => {
 			if ( err ) return send_error( res, err );
 
 			send_ok( res, { addrs } );
 		} );
 	} );
 
-}
+};

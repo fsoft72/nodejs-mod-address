@@ -211,7 +211,7 @@ export const address_db_init = ( liwe: ILiWE, cback: LCback = null ): Promise<bo
 			{ type: "persistent", fields: [ "city" ], unique: false },
 			{ type: "persistent", fields: [ "state" ], unique: false },
 			{ type: "persistent", fields: [ "country" ], unique: false },
-		], false );
+		] );
 
 		/*=== d2r_start address_db_init ===*/
 

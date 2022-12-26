@@ -1,7 +1,6 @@
 
 import { ILRequest, ILResponse, LCback, ILiweConfig, ILError, ILiWE } from '../../liwe/types';
 import { mkid } from '../../liwe/utils';
-import { collection_add, collection_find_all, collection_find_one, collection_find_one_dict, collection_find_all_dict, collection_del_one_dict, collection_init, prepare_filters } from '../../liwe/arangodb';
 import { DocumentCollection } from 'arangojs/collection';
 
 import {
@@ -17,11 +16,13 @@ const COLL_ADDRESSES = "addresses";
 /*=== d2r_start __file_header === */
 import { keys_valid } from '../../liwe/utils';
 import { system_domain_get_by_session } from '../system/methods';
+import { adb_find_one, adb_find_all, adb_del_one, adb_record_add } from '../../liwe/db/arango';
+import { collection_init } from '../../liwe/arangodb';
 
 const address_get = async ( req: ILRequest, id: string, create_empty = false ) => {
 	let addr: Address = null;
 
-	if ( id ) addr = await collection_find_one_dict( req.db, COLL_ADDRESSES, { id } );
+	if ( id ) addr = await adb_find_one( req.db, COLL_ADDRESSES, { id } );
 
 	if ( !addr && create_empty ) {
 		const domain = await system_domain_get_by_session( req );
@@ -40,7 +41,7 @@ const address_create = async ( req: ILRequest, data: any, create_empty = true ):
 
 	address = { ...address, ...keys_valid( data ) };
 
-	address = await collection_add( _coll_addresses, address, false, AddressKeys );
+	address = await adb_record_add( req.db, COLL_ADDRESSES, address, AddressKeys );
 
 	return address;
 };
@@ -139,7 +140,7 @@ export const patch_address_admin_fields = ( req: ILRequest, id: string, data: an
 export const get_address_admin_list = ( req: ILRequest, id_user?: string, rows: number = -1, skip: number = 0, cback: LCback = null ): Promise<Address[]> => {
 	return new Promise( async ( resolve, reject ) => {
 		/*=== d2r_start get_address_admin_list ===*/
-		const addrs: Address[] = await collection_find_all_dict( req.db, COLL_ADDRESSES, { id_user }, AddressKeys, { rows, skip } );
+		const addrs: Address[] = await adb_find_all( req.db, COLL_ADDRESSES, { id_user }, AddressKeys, { rows, skip } );
 
 		return cback ? cback( null, addrs ) : resolve( addrs );
 		/*=== d2r_end get_address_admin_list ===*/
@@ -155,7 +156,7 @@ export const get_address_admin_list = ( req: ILRequest, id_user?: string, rows: 
 export const delete_address_admin_del = ( req: ILRequest, id: string, cback: LCback = null ): Promise<string> => {
 	return new Promise( async ( resolve, reject ) => {
 		/*=== d2r_start delete_address_admin_del ===*/
-		await collection_del_one_dict( req.db, COLL_ADDRESSES, { id } );
+		await adb_del_one( req.db, COLL_ADDRESSES, { id } );
 
 		return cback ? cback( null, id ) : resolve( id );
 		/*=== d2r_end delete_address_admin_del ===*/
@@ -186,7 +187,7 @@ export const get_address_details = ( req: ILRequest, id?: string, cback: LCback 
 export const get_address_list = ( req: ILRequest, rows: number = -1, skip: number = 0, cback: LCback = null ): Promise<Address[]> => {
 	return new Promise( async ( resolve, reject ) => {
 		/*=== d2r_start get_address_list ===*/
-		const addrs: Address[] = await collection_find_all_dict( req.db, COLL_ADDRESSES, { id_user: req.user.id }, AddressKeys );
+		const addrs: Address[] = await adb_find_all( req.db, COLL_ADDRESSES, { id_user: req.user.id }, AddressKeys );
 
 		return cback ? cback( null, addrs ) : resolve( addrs );
 		/*=== d2r_end get_address_list ===*/
@@ -251,9 +252,9 @@ export const address_add = ( req: ILRequest, id_user: string, address: string, n
 
 		addr = { ...addr, ...keys_valid( { id_user, address, nr, name, type, city, zip, state, country, company_name, fiscal_code, vat_number, sdi, pec } ) };
 
-		if ( unique ) await collection_del_one_dict( req.db, COLL_ADDRESSES, { id_user, type } );
+		if ( unique ) await adb_del_one( req.db, COLL_ADDRESSES, { id_user, type } );
 
-		addr = await collection_add( _coll_addresses, addr, false, AddressKeys );
+		addr = await adb_record_add( req.db, COLL_ADDRESSES, addr, AddressKeys );
 
 		return cback ? cback( null, addr ) : resolve( addr );
 		/*=== d2r_end address_add ===*/
@@ -270,7 +271,7 @@ export const address_add = ( req: ILRequest, id_user: string, address: string, n
 export const address_user_list = ( req: ILRequest, id_user: string, cback: LCback = null ): Promise<Address[]> => {
 	return new Promise( async ( resolve, reject ) => {
 		/*=== d2r_start address_user_list ===*/
-		const addrs: Address[] = await collection_find_all_dict( req.db, COLL_ADDRESSES, { id_user }, AddressKeys );
+		const addrs: Address[] = await adb_find_all( req.db, COLL_ADDRESSES, { id_user }, AddressKeys );
 
 		return cback ? cback( null, addrs ) : resolve( addrs );
 		/*=== d2r_end address_user_list ===*/

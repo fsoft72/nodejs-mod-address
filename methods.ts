@@ -16,8 +16,7 @@ const COLL_ADDRESSES = "addresses";
 /*=== d2r_start __file_header === */
 import { keys_valid } from '../../liwe/utils';
 import { system_domain_get_by_session } from '../system/methods';
-import { adb_find_one, adb_find_all, adb_del_one, adb_record_add } from '../../liwe/db/arango';
-import { collection_init } from '../../liwe/arangodb';
+import { adb_collection_init, adb_find_one, adb_find_all, adb_del_one, adb_record_add } from '../../liwe/db/arango';
 
 const address_get = async ( req: ILRequest, id: string, create_empty = false ) => {
 	let addr: Address = null;
@@ -204,7 +203,7 @@ export const address_db_init = ( liwe: ILiWE, cback: LCback = null ): Promise<bo
 	return new Promise( async ( resolve, reject ) => {
 		_liwe = liwe;
 
-		_coll_addresses = await collection_init( liwe.db, COLL_ADDRESSES, [
+		_coll_addresses = await adb_collection_init( liwe.db, COLL_ADDRESSES, [
 			{ type: "persistent", fields: [ "id" ], unique: true },
 			{ type: "persistent", fields: [ "domain" ], unique: false },
 			{ type: "persistent", fields: [ "id_user" ], unique: false },

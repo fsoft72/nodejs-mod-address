@@ -3,11 +3,10 @@
 /*=== f2c_start __file ===*/
 
 /*=== f2c_end __file ===*/
-
 /** Address */
 export interface Address {
 	/** the main id field */
-	id?: string;
+	id: string;
 	/** domain */
 	domain?: string;
 	/** The user id */
